@@ -3,8 +3,8 @@
 import pandas as pd
 import numpy as np
 
-sf = pd.read_csv("scrap.csv", encoding = "ISO-8859-1")
-lf = pd.read_csv("lt.csv", encoding = "ISO-8859-1")
+sf = pd.read_csv("scrap-dummy.csv", encoding = "ISO-8859-1")
+lf = pd.read_csv("lt-dummy.csv", encoding = "ISO-8859-1")
 
 
 def get_resources_pn(pn): 
