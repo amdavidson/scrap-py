@@ -1,29 +1,36 @@
 #!/usr/bin/env python3
 
 import pandas as pd
-import numpy as np
 
 sf = pd.read_csv("scrap-dummy.csv", encoding = "ISO-8859-1")
 lf = pd.read_csv("lt-dummy.csv", encoding = "ISO-8859-1")
 
 
-def get_resources_pn(pn): 
-    l = lf[lf['PART_ID'].str.match(pn[:5],na=False)]['RESOURCE_ID'].unique()
-    l.sort()
+def get_resources_pn(pn, pn_memory):
+    try:
+        l = pn_memory[pn]
+    except KeyError:
+        l = lf[lf['PART_ID'].str.match(pn[:6], na=False)]['RESOURCE_ID'].unique()
+        l.sort()
+        pn_memory[pn] = l
     return l
 
-def get_resources_wo(wo): 
-    l = lf[lf['WORKORDER_BASE_ID'].str.match(wo,na=False)]['RESOURCE_ID'].unique()
-    l.sort()
+def get_resources_wo(wo, wo_memory):
+    try:
+        l = wo_memory[wo]
+    except KeyError:
+        l = lf[lf['WORKORDER_BASE_ID'].str.match(wo,na=False)]['RESOURCE_ID'].unique()
+        l.sort()
+        wo_memory[wo] = l
     return l
 
 def str_arr(arr):
     return ' '.join(str(s) for s in arr)
-
-sf['ResourceList_byPN'] = sf.apply(lambda r: 
-        str_arr(get_resources_pn(r.PART)), axis = 1)
+pn_memory = {}
+sf['ResourceList_byPN'] = sf.apply(lambda r:
+        str_arr(get_resources_pn(r.PART, pn_memory)), axis = 1)
+wo_memory = {}
 sf['ResourceList_byWO'] = sf.apply(lambda r: 
-        str_arr(get_resources_wo(r.WO)), axis = 1)
-
+        str_arr(get_resources_wo(r.WO, wo_memory)), axis = 1)
 print(sf.to_csv())
 
