@@ -8,11 +8,11 @@ lf = pd.read_csv("lt-dummy.csv", encoding = "ISO-8859-1")
 
 def get_resources_pn(pn, pn_memory):
     try:
-        l = pn_memory[pn]
+        l = pn_memory[pn[:6]]
     except KeyError:
         l = lf[lf['PART_ID'].str.match(pn[:6], na=False)]['RESOURCE_ID'].unique()
         l.sort()
-        pn_memory[pn] = l
+        pn_memory[pn[:6]] = l
     return l
 
 def get_resources_wo(wo, wo_memory):
