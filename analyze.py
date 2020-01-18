@@ -2,8 +2,8 @@
 
 import pandas as pd
 
-sf = pd.read_csv("scrap-dummy.csv", encoding = "ISO-8859-1")
-lf = pd.read_csv("lt-dummy.csv", encoding = "ISO-8859-1")
+sf = pd.read_csv("scrap-dummy.csv", encoding="ISO-8859-1", dtype=str)
+lf = pd.read_csv("lt-dummy.csv", encoding = "ISO-8859-1", dtype=str)
 
 
 def get_resources_pn(pn, pn_memory):
@@ -26,10 +26,14 @@ def get_resources_wo(wo, wo_memory):
 
 def str_arr(arr):
     return ' '.join(str(s) for s in arr)
-pn_memory = {}
+
+lf['sub_PART_ID']=lf['PART_ID'].str.slice(0,5)
+pn_memory = lf.sort_values(['RESOURCE_ID']).groupby(['sub_PART_ID'])['RESOURCE_ID'].unique().apply(list).to_dict()
 sf['ResourceList_byPN'] = sf.apply(lambda r:
         str_arr(get_resources_pn(r.PART, pn_memory)), axis = 1)
-wo_memory = {}
+
+
+wo_memory = lf.sort_values(['RESOURCE_ID']).groupby(['WORKORDER_BASE_ID'])['RESOURCE_ID'].unique().apply(list).to_dict()
 sf['ResourceList_byWO'] = sf.apply(lambda r: 
         str_arr(get_resources_wo(r.WO, wo_memory)), axis = 1)
 print(sf.to_csv())
